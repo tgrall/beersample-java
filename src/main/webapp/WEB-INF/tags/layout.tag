@@ -38,7 +38,7 @@
       </div>
       <hr>
       <div class="footer">
-        <p>&copy; Couchbase, Inc. 2012</p>
+        <p>&copy; Couchbase, Inc. 2013</p>
       </div>
     </div>
     <script src="/js/jquery.min.js"></script>
