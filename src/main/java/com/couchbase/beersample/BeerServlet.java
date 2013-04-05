@@ -76,7 +76,9 @@ public class BeerServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     try {
-      if(request.getPathInfo().startsWith("/show")) {
+      if(request.getPathInfo() == null) {
+        handleIndex(request, response);
+      } else if(request.getPathInfo().startsWith("/show")) {
         handleShow(request, response);
       } else if(request.getPathInfo().startsWith("/delete")) {
         handleDelete(request, response);
@@ -121,6 +123,43 @@ public class BeerServlet extends HttpServlet {
 
     client.set(beerId, 0, gson.toJson(beer));
     response.sendRedirect("/beers/show/" + beerId);
+  }
+
+  /**
+   * Handle the /beers action.
+   *
+   * Based on a defined Couchbase View (beer/brewery_beers), the beers are
+   * loaded, arranged and passed to the JSP layer. Google GSON is used to
+   * handle the JSON encoding/decoding.
+   *
+   * @param request the HTTP request object.
+   * @param response the HTTP response object.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void handleIndex(HttpServletRequest request,
+    HttpServletResponse response) throws IOException, ServletException {
+      View view = client.getView("beer", "by_name");
+      Query query = new Query();
+      query.setIncludeDocs(true).setLimit(20);
+      ViewResponse result = client.query(view, query);
+
+      ArrayList<HashMap<String, String>> beers =
+              new ArrayList<HashMap<String, String>>();
+      for (ViewRow row : result) {
+          HashMap<String, String> parsedDoc = gson.fromJson(
+                  (String) row.getDocument(), HashMap.class);
+
+          HashMap<String, String> beer = new HashMap<String, String>();
+          beer.put("id", row.getId());
+          beer.put("name", parsedDoc.get("name"));
+          beer.put("brewery", parsedDoc.get("brewery_id"));
+          beers.add(beer);
+      }
+      request.setAttribute("beers", beers);
+
+      request.getRequestDispatcher("/WEB-INF/beers/index.jsp")
+              .forward(request, response);
   }
 
   /**
