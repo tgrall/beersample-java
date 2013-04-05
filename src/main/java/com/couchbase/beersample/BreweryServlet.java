@@ -80,6 +80,8 @@ public class BreweryServlet extends HttpServlet {
         handleShow(request, response);
       } else if(request.getPathInfo().startsWith("/delete")) {
         handleDelete(request, response);
+      } else if(request.getPathInfo().startsWith("/search")) {
+        handleSearch(request, response);
       }
     } catch (InterruptedException ex) {
       Logger.getLogger(BreweryServlet.class.getName()).log(
@@ -173,6 +175,51 @@ public class BreweryServlet extends HttpServlet {
     if(delete.get()) {
       response.sendRedirect("/breweries");
     }
+  }
+
+  /**
+   * Handle the /breweries/search action.
+   *
+   * Based on a defined Couchbase View (breweries/by_name), the breweries are
+   * loaded, arranged and passed as JSON to be used by the javascript layer.
+   *
+   * @param request the HTTP request object.
+   * @param response the HTTP response object.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void handleSearch(HttpServletRequest request,
+    HttpServletResponse response) throws IOException, ServletException {
+
+    String startKey = request.getParameter("value").toLowerCase();
+
+    View view = client.getView("brewery", "by_name");
+    Query query = new Query();
+
+
+    query.setIncludeDocs(true)
+      .setLimit(20)
+      .setRangeStart(ComplexKey.of(startKey))
+      .setRangeEnd(ComplexKey.of(startKey + "\uefff"));
+    System.out.println(query);
+    ViewResponse result = client.query(view, query);
+
+    ArrayList<HashMap<String, String>> breweries =
+      new ArrayList<HashMap<String, String>>();
+    for(ViewRow row : result) {
+      HashMap<String, String> parsedDoc = gson.fromJson(
+        (String)row.getDocument(), HashMap.class);
+
+        HashMap<String, String> brewery = new HashMap<String, String>();
+        brewery.put("id", row.getId());
+        brewery.put("name", parsedDoc.get("name"));
+        breweries.add(brewery);
+    }
+
+    response.setContentType("application/json");
+    PrintWriter out = response.getWriter();
+    out.print(gson.toJson(breweries));
+    out.flush();
   }
 
 }

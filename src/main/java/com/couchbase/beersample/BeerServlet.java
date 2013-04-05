@@ -84,6 +84,8 @@ public class BeerServlet extends HttpServlet {
         handleDelete(request, response);
       } else if(request.getPathInfo().startsWith("/edit")) {
         handleEdit(request, response);
+      } else if(request.getPathInfo().startsWith("/search")) {
+        handleSearch(request, response);
       }
     } catch (InterruptedException ex) {
       Logger.getLogger(BeerServlet.class.getName()).log(
@@ -233,5 +235,50 @@ public class BeerServlet extends HttpServlet {
       .forward(request, response);
   }
 
+  /**
+   * Handle the /beers/search action.
+   *
+   * Based on a defined Couchbase View (beer/by_name), the beers are
+   * loaded, arranged and passed as JSON to be used by the javascript layer.
+   *
+   * @param request the HTTP request object.
+   * @param response the HTTP response object.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void handleSearch(HttpServletRequest request,
+    HttpServletResponse response) throws IOException, ServletException {
+
+    String startKey = request.getParameter("value").toLowerCase();
+
+    View view = client.getView("beer", "by_name");
+    Query query = new Query();
+
+
+    query.setIncludeDocs(true)
+      .setLimit(20)
+      .setRangeStart(ComplexKey.of(startKey))
+      .setRangeEnd(ComplexKey.of(startKey + "\uefff"));
+    System.out.println(query);
+    ViewResponse result = client.query(view, query);
+
+    ArrayList<HashMap<String, String>> beers =
+      new ArrayList<HashMap<String, String>>();
+    for(ViewRow row : result) {
+      HashMap<String, String> parsedDoc = gson.fromJson(
+        (String)row.getDocument(), HashMap.class);
+
+        HashMap<String, String> beer = new HashMap<String, String>();
+        beer.put("id", row.getId());
+        beer.put("name", parsedDoc.get("name"));
+        beer.put("brewery", parsedDoc.get("brewery_id"));
+        beers.add(beer);
+    }
+
+    response.setContentType("application/json");
+    PrintWriter out = response.getWriter();
+    out.print(gson.toJson(beers));
+    out.flush();
+  }
 
 }

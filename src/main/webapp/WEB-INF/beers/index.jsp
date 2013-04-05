@@ -5,6 +5,11 @@
     <jsp:body>
     <h3>Browse Beers</h3>
 
+    <form class="navbar-search pull-left">
+        <input id="beer-search" type="text" class="search-query"
+               placeholder="Search for Beers">
+    </form>
+
             <table id="beer-table" class="table table-striped">
                 <thead>
                     <tr>
