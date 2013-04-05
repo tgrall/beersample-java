@@ -45,7 +45,7 @@
                 </div>
                 <div class="span12">
                     <label>Comment</label>
-                    <textarea class="input-xxlarge" name="beer_comments" rows="3">${beer.comment}</textarea>
+                    <textarea class="input-xxlarge" name="beer_comments" rows="3">${beer.comments}</textarea>
                 </div>
 
                 <div class="span12">
