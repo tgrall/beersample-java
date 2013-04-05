@@ -9,12 +9,21 @@
         <servlet-class>com.couchbase.beersample.WelcomeServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>BreweryServlet</servlet-name>
+        <servlet-class>com.couchbase.beersample.BreweryServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>BeerServlet</servlet-name>
         <servlet-class>com.couchbase.beersample.BeerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/welcome</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BreweryServlet</servlet-name>
+        <url-pattern>/breweries/*</url-pattern>
+        <url-pattern>/breweries</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>BeerServlet</servlet-name>

@@ -13,6 +13,8 @@
                 <pre>${beer}</pre>
 
                 Edit this beer : <a href="/beers/edit/blue_ridge_brewing-colonel_paris_pale_ale">/beers/edit/blue_ridge_brewing-colonel_paris_pale_ale</a>
+                <br/>
+                View the brewery : <a href="/breweries/show/blue_ridge_brewing">/breweries/show/blue_ridge_brewing</a>
 
                 </div>
             </div>
