@@ -43,6 +43,16 @@
                       <input type="text" name="beer_upc" placeholder="The beer's UPC" value="${beer.upc}">
                     </div>
                 </div>
+                <div class="span12">
+                    <label>Comment</label>
+                    <textarea class="input-xxlarge" name="beer_comments" rows="3">${beer.comment}</textarea>
+                </div>
+
+                <div class="span12">
+                    <label>Product Page</label>
+                    <input class="input-xlarge" type="url" name="beer_product_page"  value="${beer.product_page}">
+                </div>
+
             </fieldset>
             <fieldset>
                 <legend>Brewery</legend>
