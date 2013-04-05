@@ -22,6 +22,8 @@
 
 package com.couchbase.beersample;
 
+import com.couchbase.client.CouchbaseClient;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +49,13 @@ public class WelcomeServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    request.getRequestDispatcher("/WEB-INF/welcome/index.jsp")
+
+      // get a beer and print it in th home page (using simple request attribute)
+      CouchbaseClient client = ConnectionManager.getInstance();
+      String beer = (String) client.get("blue_ridge_brewing-colonel_paris_pale_ale");
+      request.setAttribute("beer", beer);
+
+      request.getRequestDispatcher("/WEB-INF/welcome/index.jsp")
       .forward(request, response);
   }
 

@@ -7,6 +7,12 @@
             <h1>Welcome to the Couchbase Workshop</h1>
             <p class="lead">Starting point of your application. Let's now add some data to this beautiful application</p>
             <p class="lead">Cheers!</p>
+
+            <div class="row" class="span6">
+                <div class="span6">
+                <pre>${beer}</pre>
+                </div>
+            </div>
         </div>
     </jsp:body>
 </t:layout>
