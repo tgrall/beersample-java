@@ -74,7 +74,9 @@ public class BreweryServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     try {
-      if(request.getPathInfo().startsWith("/show")) {
+      if(request.getPathInfo() == null) {
+        handleIndex(request, response);
+      } else if(request.getPathInfo().startsWith("/show")) {
         handleShow(request, response);
       } else if(request.getPathInfo().startsWith("/delete")) {
         handleDelete(request, response);
@@ -86,6 +88,42 @@ public class BreweryServlet extends HttpServlet {
       Logger.getLogger(BreweryServlet.class.getName()).log(
         Level.SEVERE, null, ex);
     }
+  }
+
+  /**
+   * Handle the /breweries action.
+   *
+   * Based on a defined Couchbase View (beer/brewery_beers), the breweries are
+   * loaded, arranged and passed to the JSP layer. Google GSON is used to
+   * handle the JSON encoding/decoding.
+   *
+   * @param request the HTTP request object.
+   * @param response the HTTP response object.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void handleIndex(HttpServletRequest request,
+    HttpServletResponse response) throws IOException, ServletException {
+          View view = client.getView("brewery", "by_name");
+          Query query = new Query();
+          query.setIncludeDocs(true).setLimit(20);
+          ViewResponse result = client.query(view, query);
+
+          ArrayList<HashMap<String, String>> breweries =
+                  new ArrayList<HashMap<String, String>>();
+          for (ViewRow row : result) {
+              HashMap<String, String> parsedDoc = gson.fromJson(
+                      (String) row.getDocument(), HashMap.class);
+
+              HashMap<String, String> brewery = new HashMap<String, String>();
+              brewery.put("id", row.getId());
+              brewery.put("name", parsedDoc.get("name"));
+              breweries.add(brewery);
+          }
+          request.setAttribute("breweries", breweries);
+
+          request.getRequestDispatcher("/WEB-INF/breweries/index.jsp")
+                  .forward(request, response);
   }
 
   /**
