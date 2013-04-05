@@ -11,6 +11,9 @@
             <div class="row" class="span6">
                 <div class="span6">
                 <pre>${beer}</pre>
+
+                Edit this beer : <a href="/beers/edit/blue_ridge_brewing-colonel_paris_pale_ale">/beers/edit/blue_ridge_brewing-colonel_paris_pale_ale</a>
+
                 </div>
             </div>
         </div>

@@ -8,9 +8,18 @@
         <servlet-name>WelcomeServlet</servlet-name>
         <servlet-class>com.couchbase.beersample.WelcomeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>BeerServlet</servlet-name>
+        <servlet-class>com.couchbase.beersample.BeerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/welcome</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BeerServlet</servlet-name>
+        <url-pattern>/beers/*</url-pattern>
+        <url-pattern>/beers</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>welcome</welcome-file>

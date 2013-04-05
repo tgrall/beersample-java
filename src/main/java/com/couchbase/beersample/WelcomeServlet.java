@@ -53,6 +53,7 @@ public class WelcomeServlet extends HttpServlet {
       // get a beer and print it in th home page (using simple request attribute)
       CouchbaseClient client = ConnectionManager.getInstance();
       String beer = (String) client.get("blue_ridge_brewing-colonel_paris_pale_ale");
+      request.setAttribute("id", "blue_ridge_brewing-colonel_paris_pale_ale");
       request.setAttribute("beer", beer);
 
       request.getRequestDispatcher("/WEB-INF/welcome/index.jsp")
