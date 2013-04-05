@@ -106,6 +106,7 @@ public class BreweryServlet extends HttpServlet {
    */
   private void handleIndex(HttpServletRequest request,
     HttpServletResponse response) throws IOException, ServletException {
+      try {
           View view = client.getView("brewery", "by_name");
           Query query = new Query();
           query.setIncludeDocs(true).setLimit(20);
@@ -126,6 +127,10 @@ public class BreweryServlet extends HttpServlet {
 
           request.getRequestDispatcher("/WEB-INF/breweries/index.jsp")
                   .forward(request, response);
+
+      } catch (InvalidViewException e) {
+          response.getWriter().print(InstallViewServlet.printNoViewMessage());
+      }
   }
 
   /**

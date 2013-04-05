@@ -141,27 +141,31 @@ public class BeerServlet extends HttpServlet {
    */
   private void handleIndex(HttpServletRequest request,
     HttpServletResponse response) throws IOException, ServletException {
-      View view = client.getView("beer", "by_name");
-      Query query = new Query();
-      query.setIncludeDocs(true).setLimit(20);
-      ViewResponse result = client.query(view, query);
+      try {
+          View view = client.getView("beer", "by_name");
+          Query query = new Query();
+          query.setIncludeDocs(true).setLimit(20);
+          ViewResponse result = client.query(view, query);
 
-      ArrayList<HashMap<String, String>> beers =
-              new ArrayList<HashMap<String, String>>();
-      for (ViewRow row : result) {
-          HashMap<String, String> parsedDoc = gson.fromJson(
-                  (String) row.getDocument(), HashMap.class);
+          ArrayList<HashMap<String, String>> beers =
+                  new ArrayList<HashMap<String, String>>();
+          for (ViewRow row : result) {
+              HashMap<String, String> parsedDoc = gson.fromJson(
+                      (String) row.getDocument(), HashMap.class);
 
-          HashMap<String, String> beer = new HashMap<String, String>();
-          beer.put("id", row.getId());
-          beer.put("name", parsedDoc.get("name"));
-          beer.put("brewery", parsedDoc.get("brewery_id"));
-          beers.add(beer);
+              HashMap<String, String> beer = new HashMap<String, String>();
+              beer.put("id", row.getId());
+              beer.put("name", parsedDoc.get("name"));
+              beer.put("brewery", parsedDoc.get("brewery_id"));
+              beers.add(beer);
+          }
+          request.setAttribute("beers", beers);
+
+          request.getRequestDispatcher("/WEB-INF/beers/index.jsp")
+                  .forward(request, response);
+      } catch (InvalidViewException e) {
+        response.getWriter().print( InstallViewServlet.printNoViewMessage() );
       }
-      request.setAttribute("beers", beers);
-
-      request.getRequestDispatcher("/WEB-INF/beers/index.jsp")
-              .forward(request, response);
   }
 
   /**

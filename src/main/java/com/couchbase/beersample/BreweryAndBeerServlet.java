@@ -47,35 +47,40 @@ public class BreweryAndBeerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if(request.getPathInfo() == null) {
-            handleIndex(request, response);
-        }
+            if(request.getPathInfo() == null) {
+                handleIndex(request, response);
+            }
     }
 
     private void handleIndex(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        View view = client.getView("brewery", "all_with_beers");
-        Query query = new Query();
-        query.setIncludeDocs(true).setLimit(100);
-        ViewResponse result = client.query(view, query);
+        try {
+            View view = client.getView("brewery", "all_with_beers");
+            Query query = new Query();
+            query.setIncludeDocs(true).setLimit(100);
+            ViewResponse result = client.query(view, query);
 
-        ArrayList<HashMap<String, String>> items =
-                new ArrayList<HashMap<String, String>>();
-        for (ViewRow row : result) {
-            HashMap<String, String> parsedDoc = gson.fromJson(
-                    (String) row.getDocument(), HashMap.class);
+            ArrayList<HashMap<String, String>> items =
+                    new ArrayList<HashMap<String, String>>();
+            for (ViewRow row : result) {
+                HashMap<String, String> parsedDoc = gson.fromJson(
+                        (String) row.getDocument(), HashMap.class);
 
-            HashMap<String, String> item = new HashMap<String, String>();
-            item.put("id", row.getId());
-            item.put("name", parsedDoc.get("name"));
-            item.put("type", parsedDoc.get("type"));
+                HashMap<String, String> item = new HashMap<String, String>();
+                item.put("id", row.getId());
+                item.put("name", parsedDoc.get("name"));
+                item.put("type", parsedDoc.get("type"));
 
 
-            items.add(item);
+                items.add(item);
+            }
+            request.setAttribute("items", items);
+
+            request.getRequestDispatcher("/WEB-INF/breweries/all.jsp")
+                    .forward(request, response);
+        } catch (InvalidViewException e) {
+            response.getWriter().print( InstallViewServlet.printNoViewMessage() );
         }
-        request.setAttribute("items", items);
-
-        request.getRequestDispatcher("/WEB-INF/breweries/all.jsp")
-                .forward(request, response);
     }
+
 
 }
