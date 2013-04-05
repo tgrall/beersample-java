@@ -16,6 +16,10 @@
         <servlet-name>BeerServlet</servlet-name>
         <servlet-class>com.couchbase.beersample.BeerServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>BreweryBeerServlet</servlet-name>
+        <servlet-class>com.couchbase.beersample.BreweryAndBeerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/welcome</url-pattern>
@@ -29,6 +33,11 @@
         <servlet-name>BeerServlet</servlet-name>
         <url-pattern>/beers/*</url-pattern>
         <url-pattern>/beers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BreweryBeerServlet</servlet-name>
+        <url-pattern>/all/*</url-pattern>
+        <url-pattern>/all</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>welcome</welcome-file>

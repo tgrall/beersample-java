@@ -14,6 +14,11 @@
                 <a href="/breweries" class="btn btn-info">Take me to the breweries</a>
                 <hr/>
             </div>
+            <div class="span12">
+                <h4>Browse all Breweries and Beers</h4>
+                <a href="/all" class="btn btn-primary">Take me to the all records</a>
+                <hr/>
+            </div>
         </div>
     </jsp:body>
 </t:layout>
