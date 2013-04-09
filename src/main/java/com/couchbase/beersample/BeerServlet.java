@@ -38,6 +38,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.spy.memcached.CASResponse;
+import net.spy.memcached.CASValue;
 import net.spy.memcached.internal.OperationFuture;
 
 /**
@@ -108,6 +111,11 @@ public class BeerServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
 
+    long cas = -1;
+    if (request.getParameter("cas")!=null) {
+        cas = Long.parseLong(request.getParameter("cas"));
+    }
+
     String beerId = request.getPathInfo().split("/")[2];
     HashMap<String, String> beer = beer = new HashMap<String, String>();
     Enumeration<String> params = request.getParameterNames();
@@ -123,8 +131,13 @@ public class BeerServlet extends HttpServlet {
     beer.put("type", "beer");
     beer.put("updated", new Date().toString());
 
-    client.set(beerId, 0, gson.toJson(beer));
-    response.sendRedirect("/beers/show/" + beerId);
+    String responseURI = "/beers/show/" + beerId;
+    CASResponse casResponse = client.cas(beerId, cas, gson.toJson(beer));
+    if (casResponse.equals(CASResponse.EXISTS) ) {
+        responseURI = "/beers/edit/" + beerId + "?msg=err_updated";
+    }
+    response.sendRedirect(responseURI);
+
   }
 
   /**
@@ -222,7 +235,9 @@ public class BeerServlet extends HttpServlet {
 
     String[] beerId = request.getPathInfo().split("/");
     if(beerId.length > 2) {
-      String document = (String) client.get(beerId[2]);
+      CASValue casValue = client.gets(beerId[2]);
+      String document = (String)casValue.getValue();
+      long cas = casValue.getCas();
 
       HashMap<String, String> beer = null;
       if(document != null) {
@@ -231,6 +246,13 @@ public class BeerServlet extends HttpServlet {
         request.setAttribute("beer", beer);
       }
       request.setAttribute("title", "Modify Beer \"" + beer.get("name") + "\"");
+      request.setAttribute("cas", cas);
+
+      // check if a message should be printed
+      if (request.getParameter("msg") != null && request.getParameter("msg").equalsIgnoreCase("err_updated") ) {
+          request.setAttribute("msg","Cannot save the data: the beer has been modified by somebody else");
+      }
+
     } else {
       request.setAttribute("title", "Create a new beer");
     }

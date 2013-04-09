@@ -5,7 +5,12 @@
     <jsp:body>
         <h3>${title}</h3>
 
+        <c:if test="${msg != null}">
+            <div class="alert alert-danger text-error">${msg}</div>
+        </c:if>
+
         <form method="post" action="/beers/edit/${beer.id}">
+            <input type="hidden" value="${cas}" name="cas" />
             <fieldset>
               <legend>General Info</legend>
               <div class="span12">
